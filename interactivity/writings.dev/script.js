@@ -1,9 +1,85 @@
+class Articles {
+
+  static content = [];
+
+  constructor(containerClass, cardsPerPage = 9) {
+
+    this.containerClass = containerClass;
+    this._cardsPerPage = cardsPerPage;
+    this._currentPage = 0;
+    document.addEventListener("selectPage", this.selectPage.bind(this));
+    document.addEventListener("contentLoaded", this.onLoad.bind(this));
+
+  }
+
+  onLoad() {
+    this.populatePage();
+  }
+
+  addCard(cardObject) {
+    let card = document.createElement('div')
+    card.className = "card"
+    card.innerHTML = `
+    <div class="card-content">
+      <img src="images/${cardObject.img}">
+      <h3>${cardObject.title}</h3>
+      <p>${cardObject.content}</p>
+      <div class="card-footer">
+        <p>${cardObject.date}</p>
+        <p>•</p>
+        <p>${cardObject.category}</p>
+      </div>
+    </div>
+    `;
+
+    document.querySelector(this.containerClass).append(card);
+  }
+
+  populatePage(start = 0, end = this._cardsPerPage) {
+    let container = document.querySelector(this.containerClass);
+
+    container.innerHTML = "";
+
+    for (let card of Articles.content.slice(start, end)) {
+      this.addCard(card);
+    }
+  }
+
+  selectPage(event) {
+    if (event.detail.pageIndex === this._currentPage) return;
+
+    let start = event.detail.pageIndex * this._cardsPerPage;
+    let end = start + this._cardsPerPage;
+
+    this.populatePage(start, end);
+
+    this._currentPage = event.detail.pageIndex;
+  }
+
+}
+
 class Pagination {
-  constructor(container) {
-    this._container = container;
-    this._container.onclick = this.select.bind(this);
-    this._current = document.querySelector(".current-page");
-    this._pages = container.querySelectorAll("li");
+  constructor(containerClass, cardsPerPage = 9) {
+    this._containerClass = containerClass;
+    this._cardsPerPage = cardsPerPage;
+
+    let container = document.querySelector(this._containerClass)
+
+    container.addEventListener("click", this.select.bind(this));
+    document.addEventListener("contentLoaded", this.onLoad.bind(this));
+
+    /**
+     * Load content from json file (simulating API request)
+     * Once loaded, trigger event to create cards
+     */
+    fetch("./content.json")
+      .then(response => response.json())
+      .then(data => {
+        Articles.content = data;
+
+        let event = new CustomEvent("contentLoaded");
+        document.dispatchEvent(event);
+      });
   }
 
   /**
@@ -12,6 +88,46 @@ class Pagination {
   get pageIndex() {
     return Array.from(this._pages).indexOf(this._current);
   }
+
+  onLoad() {
+    let container = document.querySelector(this._containerClass);
+
+    this._numPages = Math.ceil(Articles.content.length / this._cardsPerPage);
+
+    console.log(this._numPages)
+
+    this.createButtons();
+
+    this._pages = container.querySelectorAll("li");
+    this._current = this._pages[0]
+    this._current.classList.add("current-page");
+  }
+
+  createButtons() {
+    let container = document.querySelector(this._containerClass);
+
+    let previous = document.createElement("div");
+    previous.setAttribute("previous", "")
+    previous.classList.add("pagination-button")
+    previous.textContent = "Previous";
+
+    container.append(previous);
+
+    for (let i = 1; i <= this._numPages; i ++) {
+      let li = document.createElement("li")
+      li.classList.add("pagination-button")
+      li.innerHTML = `<p>${i}</p>`
+      container.append(li);
+    }
+
+    let next = document.createElement("div");
+    next.setAttribute("next", "")
+    next.classList.add("pagination-button")
+    next.textContent = "Next";
+
+    container.append(next);
+  }
+
 
   select(event) {
     let elem = event.target.closest(".pagination-button");
@@ -49,9 +165,13 @@ class Pagination {
       let prev = document.querySelector("div[next]");
       prev.classList.remove("greyed-out");
     }
+
+    let pageEvent = new CustomEvent("selectPage", { detail: { pageIndex: this.pageIndex } });
+    document.dispatchEvent(pageEvent);
   }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  let pg = new Pagination(document.querySelector(".pagination"));
+  let ar = new Articles(".cards-container")
+  let pg = new Pagination(".pagination", 9);
 })

@@ -156,12 +156,15 @@ h2 {
 }
 
 .card-content>img {
-  min-height: 45%;
+  object-fit: cover;
+  max-height: 5rem;
   width: 100%;
   border-radius: 1rem;
 }
 
 .pagination {
+  cursor: pointer;
+  user-select: none;
   grid-column: 2 / span 3;
   padding: 0 25%;
   display: flex;
