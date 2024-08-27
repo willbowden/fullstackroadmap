@@ -1,9 +1,9 @@
 class Pagination {
-  constructor(pages, container) {
+  constructor(container) {
     this._container = container;
     this._container.onclick = this.select.bind(this);
     this._current = document.querySelector(".current-page");
-    this._pages = container.querySelectorAll("li")
+    this._pages = container.querySelectorAll("li");
   }
 
   /**
@@ -20,20 +20,38 @@ class Pagination {
 
     if (elem == this._current) return;
 
-    this._current.classList.remove("current-page");
-
     if (elem.hasAttribute("previous")) {
-      elem = this._pages[((this.pageIndex - 1 % this._pages.length) + this._pages.length) % this._pages.length]
+      if (this._current === this._pages[0]) return;
+      elem = this._pages[this.pageIndex - 1];
     } else if (elem.hasAttribute("next")) {
-      elem = this._pages[((this.pageIndex + 1 % this._pages.length) + this._pages.length) % this._pages.length]
+      if (this._current === this._pages[this._pages.length - 1]) return;
+      elem = this._pages[this.pageIndex + 1];
     }
 
-    elem.classList.add("current-page")
+    this._current.classList.remove("current-page");
+
+    elem.classList.add("current-page");
 
     this._current = elem;
+
+    if (this._current === this._pages[0]) {
+      let prev = document.querySelector("div[previous]");
+      prev.classList.add("greyed-out");
+    } else {
+      let prev = document.querySelector("div[previous]");
+      prev.classList.remove("greyed-out");
+    }
+
+    if (this._current === this._pages[this._pages.length - 1]) {
+      let prev = document.querySelector("div[next]");
+      prev.classList.add("greyed-out");
+    } else {
+      let prev = document.querySelector("div[next]");
+      prev.classList.remove("greyed-out");
+    }
   }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  let pg = new Pagination(5, document.querySelector(".pagination"));
+  let pg = new Pagination(document.querySelector(".pagination"));
 })
