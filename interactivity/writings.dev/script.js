@@ -1,10 +1,56 @@
+class CategorySlider {
+  static categories = [
+    "JavaScript",
+    "DevOps",
+    "Cloud",
+    "Terraform",
+    "Architecture",
+    "Scalability",
+    "Explainers",
+  ];
+
+  constructor(containerClass) {
+    this._containerClass = containerClass;
+    document.querySelector(containerClass).addEventListener("mousedown", this.onMouseDown.bind(this));
+    document.querySelector(containerClass).ondragstart = () => false;
+  }
+
+  onMouseDown(event) {
+    const container = document.querySelector(this._containerClass);
+    const startX = event.pageX - container.offsetLeft;
+    const startScroll = container.scrollLeft;
+
+    function moveScroll(event) {
+      const x = event.pageX - container.offsetLeft;
+      const walkX = (x - startX);
+      container.scrollLeft = startScroll - walkX;
+    }
+
+    document.addEventListener("mousemove", moveScroll);
+
+    container.onmouseup = function () {
+      document.removeEventListener("mousemove", moveScroll);
+      container.onmouseup = null;
+      container.onmouseleave = null;
+    }
+
+    container.onmouseleave = function (event) {
+      if (event.target.matches(".categories>p")) return;
+
+      document.removeEventListener("mousemove", moveScroll);
+      container.onmouseleave = null;
+      container.onmouseup = null;
+    }
+  }
+}
+
 class Articles {
 
   static content = [];
 
   constructor(containerClass, cardsPerPage = 9) {
 
-    this.containerClass = containerClass;
+    this._containerClass = containerClass;
     this._cardsPerPage = cardsPerPage;
     this._currentPage = 0;
     document.addEventListener("selectPage", this.selectPage.bind(this));
@@ -32,11 +78,11 @@ class Articles {
     </div>
     `;
 
-    document.querySelector(this.containerClass).append(card);
+    document.querySelector(this._containerClass).append(card);
   }
 
   populatePage(start = 0, end = this._cardsPerPage) {
-    let container = document.querySelector(this.containerClass);
+    let container = document.querySelector(this._containerClass);
 
     container.innerHTML = "";
 
@@ -113,7 +159,7 @@ class Pagination {
 
     container.append(previous);
 
-    for (let i = 1; i <= this._numPages; i ++) {
+    for (let i = 1; i <= this._numPages; i++) {
       let li = document.createElement("li")
       li.classList.add("pagination-button")
       li.innerHTML = `<p>${i}</p>`
@@ -172,6 +218,7 @@ class Pagination {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  let ar = new Articles(".cards-container")
+  let ar = new Articles(".cards-container");
   let pg = new Pagination(".pagination", 9);
+  let ct = new CategorySlider(".categories");
 })

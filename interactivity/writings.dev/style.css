@@ -87,13 +87,15 @@ h2 {
 .categories {
   grid-column: 2 / span 3;
   display: flex;
-  justify-content: space-evenly;
+  gap: 1rem;
   align-items: center;
   overflow: hidden;
   white-space: nowrap;
   position: relative;
   mask-image: linear-gradient(to left, transparent, black 40px);
-  margin-bottom: 3rem;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+  user-select: none;
 }
 
 .filtering-options {
@@ -121,10 +123,15 @@ h2 {
 .cards-container {
   margin: 1rem 0;
   grid-column: 2 / span 3;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   grid-template-columns: repeat(3, auto);
   gap: 1rem;
   margin-bottom: 4rem;
+}
+
+.card {
+  width: 31%;
 }
 
 .card-content {
