@@ -137,9 +137,9 @@ h2 {
 }
 
 .card-content {
+  border-radius: 1rem;
   min-height: 100%;
   background-color: #FFFFFF;
-  border-radius: 1rem;
   color: black;
   display: flex;
   flex-direction: column;
@@ -147,20 +147,10 @@ h2 {
   padding: 1rem;
 }
 
-@keyframes selectCard {
-  to {
-    width: 80vw;
-    height: 30vh;
-  }
-}
-
-@keyframes deselectCard {
-
-}
-
-.card.selected {
-  position: fixed;
-  animation: selectCard 0.25s ease-out alternate both;
+.card.placeholder {
+  border-radius: 1rem;
+  background-color: #909090;
+  opacity: 50%;
 }
 
 .card.selected img {

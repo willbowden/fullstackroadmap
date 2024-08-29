@@ -53,6 +53,8 @@ class Articles {
     this._containerClass = containerClass;
     this._cardsPerPage = cardsPerPage;
     this._currentPage = 0;
+    this._selectedCard = null;
+    this._cloneCard = null;
     document.addEventListener("selectPage", this.selectPage.bind(this));
     document.addEventListener("contentLoaded", this.onLoad.bind(this));
     document.querySelector(this._containerClass).addEventListener("click", this.cardClicked.bind(this));
@@ -64,26 +66,63 @@ class Articles {
   }
 
   cardClicked(event) {
-    let card = event.target.closest("div.card");
 
-    if (!card) return;
+    let targetCard = event.target.closest("div.card");
+    if (!targetCard) return;
 
-    if (!card.classList.contains("selected")) {
+
+    if (this._selectedCard === null) {
+      let clone = targetCard.cloneNode(true);
+      clone.innerHTML = "";
+      clone.classList.add("placeholder");
+
+      targetCard.before(clone);
+
+      targetCard.style.position = "absolute";
+
+      targetCard.animate(
+        [
+          {
+            width: "80vw",
+            height: "30vh",
+          }
+        ],
+        {
+          duration: 1000,
+          fill: "forwards"
+        }
+      )
+
+      this._selectedCard = targetCard;
+      this._cloneCard = clone;
+
+    } else if (this._selectedCard == targetCard) {
+
       
-      const left = (document.documentElement.clientWidth / 2) - (card.offsetWidth / 2);
-      const top = (document.documentElement.clientHeight / 2) + (card.offsetHeight / 2);
+      targetCard.animate(
+        [
+          {
+            width: "31%",
+            height: "31%",
+          }
+        ],
+        {
+          duration: 1000,
+          fill: "forwards"
+        }
+      )
       
-      card.classList.add("selected");
+      targetCard.addEventListener("animationend", () => {
+        console.log("END");
+        targetCard.style.position = "static";
+        
+        this._selectedCard = null;
+  
+        this._cloneCard.remove();
+        this._cloneCard = null;
+      });
 
-      card.style.left = left + 'px';
-      card.style.top = top + 'px';
-
-    } else {
-      card.style.left = "";
-      card.style.top = "";
-      card.classList.remove("selected");
     }
-
   }
 
   addCard(cardObject) {
