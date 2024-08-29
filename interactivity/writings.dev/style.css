@@ -2,7 +2,9 @@ html {
   box-sizing: border-box;
 }
 
-*, *:before, *:after {
+*,
+*:before,
+*:after {
   box-sizing: inherit;
 }
 
@@ -135,12 +137,34 @@ h2 {
 }
 
 .card-content {
+  min-height: 100%;
   background-color: #FFFFFF;
   border-radius: 1rem;
   color: black;
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
   padding: 1rem;
+}
+
+@keyframes selectCard {
+  to {
+    width: 80vw;
+    height: 30vh;
+  }
+}
+
+@keyframes deselectCard {
+
+}
+
+.card.selected {
+  position: fixed;
+  animation: selectCard 0.25s ease-out alternate both;
+}
+
+.card.selected img {
+  max-height: 10rem;
 }
 
 .card-content>h3 {
@@ -154,6 +178,13 @@ h2 {
   font-size: 0.7rem;
 }
 
+.card-content>img {
+  object-fit: cover;
+  max-height: 5rem;
+  width: 100%;
+  border-radius: 1rem;
+}
+
 .card-footer {
   margin-top: 1rem;
   display: flex;
@@ -162,12 +193,6 @@ h2 {
   font-size: 0.65rem;
 }
 
-.card-content>img {
-  object-fit: cover;
-  max-height: 5rem;
-  width: 100%;
-  border-radius: 1rem;
-}
 
 .pagination {
   cursor: pointer;
@@ -204,7 +229,7 @@ h2 {
   justify-content: space-between;
 }
 
-.footer-section{
+.footer-section {
   display: flex;
   justify-content: center;
   gap: 0.5rem;

@@ -55,11 +55,35 @@ class Articles {
     this._currentPage = 0;
     document.addEventListener("selectPage", this.selectPage.bind(this));
     document.addEventListener("contentLoaded", this.onLoad.bind(this));
+    document.querySelector(this._containerClass).addEventListener("click", this.cardClicked.bind(this));
 
   }
 
   onLoad() {
     this.populatePage();
+  }
+
+  cardClicked(event) {
+    let card = event.target.closest("div.card");
+
+    if (!card) return;
+
+    if (!card.classList.contains("selected")) {
+      
+      const left = (document.documentElement.clientWidth / 2) - (card.offsetWidth / 2);
+      const top = (document.documentElement.clientHeight / 2) + (card.offsetHeight / 2);
+      
+      card.classList.add("selected");
+
+      card.style.left = left + 'px';
+      card.style.top = top + 'px';
+
+    } else {
+      card.style.left = "";
+      card.style.top = "";
+      card.classList.remove("selected");
+    }
+
   }
 
   addCard(cardObject) {
@@ -84,7 +108,7 @@ class Articles {
   populatePage(start = 0, end = this._cardsPerPage) {
     let container = document.querySelector(this._containerClass);
 
-    container.innerHTML = "";
+    // container.innerHTML = "";
 
     for (let card of Articles.content.slice(start, end)) {
       this.addCard(card);
